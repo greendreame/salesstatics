@@ -5,7 +5,6 @@ import com.tjcuxulin.salesstatic.model.SalesList;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class MySqliteOpenHelper extends SQLiteOpenHelper {
@@ -20,6 +19,8 @@ public class MySqliteOpenHelper extends SQLiteOpenHelper {
 			+ PurchaseList.PURCHASE_NUMS + " float, "
 			+ PurchaseList.PURCHASE_PRICE + " float,"
 			+ PurchaseList.PURCHASE_STANDARD + " TEXT, "
+			+ PurchaseList.PURCHASE_DATE + " TEXT, "
+			+ PurchaseList.PURCHASE_TIMESTAMP + " integer,"
 			+ PurchaseList.PURCHASE_INSTRUCTION + " TEXT)";
 	
 	private static final String CREATE_TABLE_SALES = "create table "
@@ -32,6 +33,8 @@ public class MySqliteOpenHelper extends SQLiteOpenHelper {
 			+ SalesList.CUSTOMER + " TEXT, "
 			+ SalesList.CUSTOMER_CELL_PHONE + " TEXT, "
 			+ SalesList.CUSTOMER_TELEPHONE + " TEXT, "
+			+ SalesList.TIMESTAMP + " integer, "
+			+ SalesList.DATE + " TEXT, "
 			+ SalesList.CUSTOMER_DEMAND + " TEXT)";
 	
 	public MySqliteOpenHelper(Context context) {

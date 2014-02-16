@@ -10,4 +10,6 @@ public class SalesList {
 	public static final String CUSTOMER_TELEPHONE = "CUSTOMER_TELEPHONE";
 	public static final String CUSTOMER_DEMAND = "CUSTOMER_DEMAND";
 	public static final String SELLING_PRICE = "SELLING_PRICE";
+	public static final String TIMESTAMP = "TIMESTAMP";
+	public static final String DATE = "DATE";
 }
