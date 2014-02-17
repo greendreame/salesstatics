@@ -16,6 +16,8 @@ public class MySqliteOpenHelper extends SQLiteOpenHelper {
 			+ PurchaseList._ID
 			+ " integer not null primary key autoincrement, "
 			+ PurchaseList.NAME + " TEXT, "
+			+ PurchaseList.NAME_FIRST_CHARS + " TEXT, "
+			+ PurchaseList.NAME_PINYIN + " TEXT, "
 			+ PurchaseList.PURCHASE_NUMS + " float, "
 			+ PurchaseList.PURCHASE_PRICE + " float,"
 			+ PurchaseList.PURCHASE_STANDARD + " TEXT, "
@@ -28,9 +30,13 @@ public class MySqliteOpenHelper extends SQLiteOpenHelper {
 			+ SalesList._ID
 			+ " integer not null primary key autoincrement, "
 			+ SalesList.NAME + " TEXT, "
+			+ SalesList.NAME_FIRST_CHARS + " TEXT, "
+			+ SalesList.NAME_PINYIN + " TEXT, "
 			+ SalesList.SELLING_PRICE + " float, "
 			+ SalesList.SALES_NUMS + " float,"
 			+ SalesList.CUSTOMER + " TEXT, "
+			+ SalesList.CUSTOMER_FIRST_CHARS + " TEXT, "
+			+ SalesList.CUSTOMER_PINYIN + " TEXT, "
 			+ SalesList.CUSTOMER_CELL_PHONE + " TEXT, "
 			+ SalesList.CUSTOMER_TELEPHONE + " TEXT, "
 			+ SalesList.TIMESTAMP + " integer, "

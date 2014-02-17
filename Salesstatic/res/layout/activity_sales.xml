@@ -97,6 +97,26 @@
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
                     android:gravity="right"
+                    android:text="@string/sales_customer_demand"
+                    android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/sales_customer_demand"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:gravity="right"
                     android:text="@string/sales_name"
                     android:textSize="20sp" />
 

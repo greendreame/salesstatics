@@ -1,6 +1,8 @@
 package com.tjcuxulin.salesstatic;
 
+import com.tjcuxulin.salesstatic.control.MyAutoCompleteAdapter;
 import com.tjcuxulin.salesstatic.model.PurchaseList;
+import com.tjcuxulin.salesstatic.util.SalesUtil;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -11,13 +13,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 
 public class PurchaseActivity extends BaseActivity {
-	private ArrayAdapter<String> adapter;
+	private MyAutoCompleteAdapter adapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +32,7 @@ public class PurchaseActivity extends BaseActivity {
 		final EditText standardView = (EditText) findViewById(R.id.purchase_standard);
 		final EditText instructionView = (EditText) findViewById(R.id.purchase_instruction);
 		Button ok = (Button) findViewById(R.id.purchase_ok);
-		adapter = new ArrayAdapter<String>(getApplicationContext(),
+		adapter = new MyAutoCompleteAdapter(getApplicationContext(),
 				R.layout.autocomplete_items);
 		nameView.setAdapter(adapter);
 
@@ -41,37 +42,39 @@ public class PurchaseActivity extends BaseActivity {
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
 				// TODO Auto-generated method stub
+				String keyWord = s.toString();
+				Cursor cursor = db.query(true, PurchaseList.TABLENAME,
+						new String[] { PurchaseList.NAME }, PurchaseList.NAME
+								+ " like '%" + keyWord + "%' or "
+								+ PurchaseList.NAME_FIRST_CHARS + " like '"
+								+ keyWord + "%' or " + PurchaseList.NAME_PINYIN
+								+ " like '" + keyWord + "%'", null, null,
+						null, null, null);
 
+				adapter.clear();
+				if (cursor.getCount() > 0) {
+					while (cursor.moveToNext()) {
+						adapter.add(cursor.getString(0));
+					}
+				}
+				adapter.notifyDataSetChanged();
+
+				cursor.close();
+				cursor = null;
 			}
 
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
 				// TODO Auto-generated method stub
-
 			}
 
 			@Override
 			public void afterTextChanged(Editable s) {
 				// TODO Auto-generated method stub
-				String keyWord = s.toString();
-				Cursor cursor = db.query(true, PurchaseList.TABLENAME,
-						new String[] { PurchaseList.NAME },
-						PurchaseList.NAME + " like '%" + keyWord + "%'", null,
-						null, null, null, null);
-
-				if (cursor.getCount() > 0) {
-					adapter.clear();
-					while (cursor.moveToNext()) {
-						adapter.add(cursor.getString(0));
-					}
-					adapter.notifyDataSetChanged();
-				}
-				
-				cursor.close();
 			}
 		});
-		
+
 		nameView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -83,8 +86,8 @@ public class PurchaseActivity extends BaseActivity {
 				if (standardString != null) {
 					standardView.setText(standardString);
 				}
-				
-				String instructionString = getStandard(nameString);
+
+				String instructionString = getInstruction(nameString);
 				if (instructionString != null) {
 					instructionView.setText(instructionString);
 				}
@@ -113,6 +116,10 @@ public class PurchaseActivity extends BaseActivity {
 				String instructionString = instructionView.getText().toString();
 				ContentValues values = new ContentValues();
 				values.put(PurchaseList.NAME, nameString);
+				values.put(PurchaseList.NAME_FIRST_CHARS,
+						SalesUtil.getPinYinHeadChar(nameString));
+				values.put(PurchaseList.NAME_PINYIN,
+						SalesUtil.getPinYin(nameString));
 				values.put(PurchaseList.PURCHASE_NUMS, numsString);
 				values.put(PurchaseList.PURCHASE_PRICE, priceString);
 				values.put(PurchaseList.PURCHASE_STANDARD, standardString);

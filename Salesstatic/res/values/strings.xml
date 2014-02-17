@@ -37,9 +37,9 @@
     <string name="sales_nums_error">销售数量不能为空！</string>
     <string name="sales_price">售价</string>
     <string name="sales_customer">客户</string>
-    <string name="sales_customer_tel">客户电话</string>
-    <string name="sales_customer_phone">客户手机</string>
-    <string name="sales_customer_demand">客户需求</string>
+    <string name="sales_customer_tel">电话</string>
+    <string name="sales_customer_phone">手机</string>
+    <string name="sales_customer_demand">需求</string>
     <string name="sales_success">录入成功!</string>
     <string name="sales_error">录入失败!</string>
     <string name="sales_continue">继续录入</string>
