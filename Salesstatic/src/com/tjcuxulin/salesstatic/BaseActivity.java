@@ -3,27 +3,52 @@ package com.tjcuxulin.salesstatic;
 import java.text.DateFormat;
 
 import com.tjcuxulin.salesstatic.db.MySqliteOpenHelper;
-import com.tjcuxulin.salesstatic.model.PurchaseList;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 public class BaseActivity extends Activity {
 	protected SQLiteDatabase db;
 	protected Toast mToast;
+	protected static final int MSG_INSERT_FINISH = 0;
+	protected ProgressDialog progressDialog;
 	
+	protected static Handler handler = new Handler(){
+		public void handleMessage(android.os.Message msg) {
+			switch (msg.what) {
+			case MSG_INSERT_FINISH:
+//				BaseActivity mActivity = (BaseActivity) msg.obj;
+//				mActivity.showChooseDialog();
+				break;
+
+			default:
+				break;
+			}
+		};
+	};
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		if (!(this instanceof MainActivity)) {
-			db = new MySqliteOpenHelper(getApplicationContext()).getWritableDatabase();
+			db = new MySqliteOpenHelper(getApplicationContext())
+					.getWritableDatabase();
+			progressDialog = new ProgressDialog(this);
+			progressDialog.setTitle(R.string.dialog_loading_title);
+			progressDialog.setMessage(getString(R.string.dialog_loading_content));
 		}
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
@@ -32,63 +57,60 @@ public class BaseActivity extends Activity {
 			db.close();
 		}
 	}
-	
+
 	protected void showToast(int resid) {
-        if (mToast == null) {
-            mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        }
-        mToast.setText(resid);
-        mToast.show();
-    }
-	
-	public boolean isstringEmpty(String str) {
-		if (str == null || str.equals("null") || str.equals("")) {
-			return true;
+		if (mToast == null) {
+			mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 		}
-		
-		return false;
+		mToast.setText(resid);
+		mToast.show();
 	}
-	
+
+	public boolean isStringEmpty(String str) {
+		return TextUtils.isEmpty(str);
+	}
+
 	public String formatDate(long time) {
 		DateFormat formatter = DateFormat.getDateInstance();
 		return formatter.format(time);
 	}
-	
-	public String getStandard(String nameString) {
+
+	public Cursor getCursorById(long id, String table) {
+		if (db != null && id != -1) {
+			return db.query(true, table, null, "_id = " + id, null, null, null,
+					null, null);
+		}
+
+		return null;
+	}
+
+	public String getColumnString(String columnName, long _id, String table) {
 		String result = null;
-		if (db != null) {
-			Cursor cursor = db.query(true, PurchaseList.TABLENAME,
-					new String[] { PurchaseList.PURCHASE_STANDARD },
-					PurchaseList.NAME + " = '" + nameString + "' and (" + PurchaseList.PURCHASE_STANDARD + " != NULL or " + PurchaseList.PURCHASE_STANDARD + " != '')", null,
-					null, null, null, null);
+		if (db != null && !TextUtils.isEmpty(columnName) && _id != -1) {
+			Cursor cursor = db.query(true, table, new String[] { columnName },
+					"_id = " + _id, null, null, null, null, null);
 			if (cursor.getCount() > 0) {
-				cursor.moveToNext();
 				result = cursor.getString(0);
 			}
-			
 			cursor.close();
 			cursor = null;
 		}
-		
+
 		return result;
 	}
 	
-	public String getInstruction(String nameString) {
-		String result = null;
-		if (db != null) {
-			Cursor cursor = db.query(true, PurchaseList.TABLENAME,
-					new String[] { PurchaseList.PURCHASE_INSTRUCTION },
-					PurchaseList.NAME + " = '" + nameString + "' and (" + PurchaseList.PURCHASE_INSTRUCTION + " != NULL or " + PurchaseList.PURCHASE_INSTRUCTION + " != '')", null,
-					null, null, null, null);
-			if (cursor.getCount() > 0) {
-				cursor.moveToNext();
-				result = cursor.getString(0);
-			}
+	protected void showChooseDialog(int id) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(id);
+		builder.setPositiveButton(R.string.ok, null);
+		builder.setNegativeButton(R.string.cancel, new OnClickListener() {
 			
-			cursor.close();
-			cursor = null;
-		}
-		
-		return result;
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				finish();
+			}
+		});
+		builder.create().show();
 	}
 }

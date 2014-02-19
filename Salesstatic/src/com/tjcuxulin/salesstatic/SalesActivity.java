@@ -1,21 +1,31 @@
 package com.tjcuxulin.salesstatic;
 
-import com.tjcuxulin.salesstatic.control.MyAutoCompleteAdapter;
-import com.tjcuxulin.salesstatic.model.PurchaseList;
-import com.tjcuxulin.salesstatic.model.SalesList;
+import java.util.ArrayList;
+import java.util.AbstractMap.SimpleEntry;
 
+import com.tjcuxulin.salesstatic.control.MyAutoCompleteAdapter;
+import com.tjcuxulin.salesstatic.model.Customer;
+import com.tjcuxulin.salesstatic.model.Merchandise;
+import com.tjcuxulin.salesstatic.model.Sales;
+import com.tjcuxulin.salesstatic.util.SalesUtil;
+
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class SalesActivity extends BaseActivity {
-
+	private long merchandiseId = -1;
+	private long customerId = -1;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -25,6 +35,8 @@ public class SalesActivity extends BaseActivity {
 	}
 
 	private void init() {
+		final ArrayList<SimpleEntry<Integer, String>> merchandiselist = new ArrayList<SimpleEntry<Integer,String>>();
+		final ArrayList<SimpleEntry<Integer, String>> customerslist = new ArrayList<SimpleEntry<Integer,String>>();
 		final MyAutoCompleteAdapter customerAdapter = new MyAutoCompleteAdapter(
 				getApplicationContext(), R.layout.autocomplete_items);
 		final MyAutoCompleteAdapter nameAdapter = new MyAutoCompleteAdapter(
@@ -37,7 +49,6 @@ public class SalesActivity extends BaseActivity {
 		final EditText numsView = (EditText) findViewById(R.id.sales_nums);
 		final EditText priceView = (EditText) findViewById(R.id.sales_price);
 		final Button ok = (Button) findViewById(R.id.sales_ok);
-		final Button continueView = (Button) findViewById(R.id.sales_continue);
 		customerView.setAdapter(customerAdapter);
 		customerView.addTextChangedListener(new TextWatcher() {
 
@@ -46,19 +57,28 @@ public class SalesActivity extends BaseActivity {
 					int count) {
 				// TODO Auto-generated method stub
 				String keyWord = s.toString();
-				Cursor cursor = db.query(true, SalesList.TABLENAME,
-						new String[] { SalesList.NAME }, SalesList.NAME
-								+ " like '%" + keyWord + "%' or "
-								+ SalesList.NAME_FIRST_CHARS + " like '"
-								+ keyWord + "%' or " + SalesList.NAME_PINYIN
+				Cursor cursor = db.query(true, Customer.TABLENAME,
+						new String[] { Customer._ID, Customer.NAME },
+						Customer.NAME + " like '%" + keyWord + "%' or "
+								+ Customer.NAME_FIRST_CHARS + " like '"
+								+ keyWord + "%' or " + Customer.NAME_PINYIN
 								+ " like '" + keyWord + "%'", null, null, null,
 						null, null);
 
 				customerAdapter.clear();
+				customerslist.clear();
 				if (cursor.getCount() > 0) {
 					while (cursor.moveToNext()) {
-						customerAdapter.add(cursor.getString(0));
+						SimpleEntry<Integer, String> entry = new SimpleEntry<Integer, String>(
+								cursor.getInt(0), cursor.getString(1));
+						customerslist.add(entry);
+						customerAdapter.add(cursor.getString(1));
 					}
+				} else {
+					customerId = -1;
+					telView.setText(null);
+					phoneView.setText(null);
+					demandView.setText(null);
 				}
 				customerAdapter.notifyDataSetChanged();
 
@@ -78,6 +98,26 @@ public class SalesActivity extends BaseActivity {
 				// TODO Auto-generated method stub
 			}
 		});
+		customerView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				// TODO Auto-generated method stub
+				customerId = customerslist.get(0).getKey();
+				Cursor cursor = getCursorById(customerId, Customer.TABLENAME);
+				if (cursor.moveToNext()) {
+					telView.setText(cursor.getString(cursor
+							.getColumnIndex(Customer.TELEPHONE)));
+					phoneView.setText(cursor.getString(cursor
+							.getColumnIndex(Customer.CELLPHONE)));
+					demandView.setText(cursor.getString(cursor
+							.getColumnIndex(Customer.DEMAND)));
+				}
+				cursor.close();
+				cursor = null;
+			}
+		});
 		nameView.setAdapter(nameAdapter);
 		nameView.addTextChangedListener(new TextWatcher() {
 
@@ -86,22 +126,27 @@ public class SalesActivity extends BaseActivity {
 					int count) {
 				// TODO Auto-generated method stub
 				String keyWord = s.toString();
-				Cursor cursor = db.query(true, PurchaseList.TABLENAME,
-						new String[] { PurchaseList.NAME }, PurchaseList.NAME
+				Cursor cursor = db.query(true, Merchandise.TABLENAME,
+						new String[] { Merchandise._ID, Merchandise.NAME }, Merchandise.NAME
 								+ " like '%" + keyWord + "%' or "
-								+ PurchaseList.NAME_FIRST_CHARS + " like '"
-								+ keyWord + "%' or " + PurchaseList.NAME_PINYIN
-								+ " like '" + keyWord + "%'", null, null, null,
-						null, null);
+								+ Merchandise.NAME_FIRST_CHARS + " like '"
+								+ keyWord + "%' or " + Merchandise.NAME_PINYIN
+								+ " like '" + keyWord + "%'", null, null,
+						null, null, null);
 
 				nameAdapter.clear();
+				merchandiselist.clear();
 				if (cursor.getCount() > 0) {
 					while (cursor.moveToNext()) {
-						nameAdapter.add(cursor.getString(0));
+						SimpleEntry<Integer, String> entry = new SimpleEntry<Integer, String>(cursor.getInt(0), cursor.getString(1));
+						merchandiselist.add(entry);
+						nameAdapter.add(cursor.getString(1));
 					}
+				} else {
+					merchandiseId = -1;
 				}
 				nameAdapter.notifyDataSetChanged();
-
+				
 				cursor.close();
 				cursor = null;
 			}
@@ -116,7 +161,16 @@ public class SalesActivity extends BaseActivity {
 			@Override
 			public void afterTextChanged(Editable s) {
 				// TODO Auto-generated method stub
-				
+
+			}
+		});
+		nameView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				// TODO Auto-generated method stub
+				merchandiseId = merchandiselist.get(0).getKey();
 			}
 		});
 
@@ -125,16 +179,95 @@ public class SalesActivity extends BaseActivity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-
-			}
-		});
-
-		continueView.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-
+				final String customerStr = customerView.getText().toString();
+				if (isStringEmpty(customerStr)) {
+					showToast(R.string.sales_customer_error);
+					return ;
+				}
+				
+				if (merchandiseId == -1) {
+					showToast(R.string.sales_name_error);
+					return ;
+				}
+				
+				final String numsString = numsView.getText().toString();
+				if (isStringEmpty(numsString)) {
+					showToast(R.string.sales_nums_error);
+					return ;
+				}
+				
+				final String phoneNumString = phoneView.getText().toString();
+				if (!isStringEmpty(phoneNumString)) {
+					boolean flag = false;
+					try {
+						Integer.parseInt(phoneNumString);
+						if (phoneNumString.length() != 11) {
+							flag = true;
+						}
+					} catch (NumberFormatException e) {
+						// TODO Auto-generated catch block
+						flag = true;
+					}
+					
+					if (flag) {
+						showToast(R.string.sales_customer_phone_error);
+						
+						return ;
+					}
+				}
+				
+				final String priceString = priceView.getText().toString();
+				if (isStringEmpty(priceString)) {
+					showToast(R.string.purchase_price_error);
+					return ;
+				} else {
+					try {
+						Float.parseFloat(priceString);
+					} catch (NumberFormatException e) {
+						// TODO Auto-generated catch block
+						showToast(R.string.purchase_price_error);
+						return ;
+					}
+				}
+				progressDialog.show();
+				handler.post(new Runnable() {
+					
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						ContentValues values = new ContentValues();
+						if (customerId == -1) {
+							values.put(Customer.NAME, customerStr);
+							values.put(Customer.NAME_FIRST_CHARS, SalesUtil.getPinYinHeadChar(customerStr));
+							values.put(Customer.NAME_PINYIN, SalesUtil.getPinYin(customerStr));
+							values.put(Customer.CELLPHONE, phoneNumString);
+							values.put(Customer.TELEPHONE, telView.getText().toString());
+							values.put(Customer.DEMAND, demandView.getText().toString());
+							customerId = db.insert(Customer.TABLENAME, null, values);
+							values.clear();
+						}
+						
+						if (customerId == -1) {
+							showToast(R.string.sales_customer_entry_error);
+							return ;
+						}
+						
+						values.put(Sales.CUSTOMER_ID, customerId);
+						values.put(Sales.MERCHANDISE_ID, merchandiseId);
+						values.put(Sales.SALES_NUMS, numsString);
+						values.put(Sales.SELLING_PRICE, priceString);
+						long timestamp = System.currentTimeMillis();
+						values.put(Sales.TIMESTAMP, timestamp);
+						values.put(Sales.DATE, formatDate(timestamp));
+						if (db.insert(Sales.TABLENAME, null, values) != -1) {
+							progressDialog.dismiss();
+							showChooseDialog(R.string.dialog_content_success);
+						} else {
+							progressDialog.dismiss();
+							showChooseDialog(R.string.dialog_content_error);
+						}
+					}
+				});
 			}
 		});
 	}

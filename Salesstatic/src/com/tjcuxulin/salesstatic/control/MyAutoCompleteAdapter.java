@@ -12,7 +12,7 @@ public class MyAutoCompleteAdapter extends ArrayAdapter<String>{
 	public MyAutoCompleteAdapter(Context context, int resource) {
 		super(context, resource);
 		// TODO Auto-generated constructor stub
-		items = new ArrayList<String>();
+		this.items = new ArrayList<String>();
 	}
 	
 	@Override

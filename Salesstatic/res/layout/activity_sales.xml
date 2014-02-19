@@ -183,20 +183,6 @@
             android:paddingTop="5dp"
             android:text="@string/ok"
             android:textSize="23sp" />
-
-        <Button
-            android:id="@+id/sales_continue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp"
-            android:gravity="center"
-            android:paddingBottom="5dp"
-            android:paddingLeft="80dp"
-            android:paddingRight="80dp"
-            android:paddingTop="5dp"
-            android:text="@string/sales_continue"
-            android:textSize="23sp" />
     </LinearLayout>
 
 </ScrollView>

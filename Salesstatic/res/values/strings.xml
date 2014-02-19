@@ -12,13 +12,15 @@
     <string name="main_search">信息检索</string>
     
     <string name="sales_name">品名</string>
-    <string name="sales_name_error">请输入品名!</string>
+    <string name="sales_name_error">请输入正确品名!</string>
     <string name="ok">确定</string>
+    <string name="cancel">取消</string>
     
     <string name="purchase_title">进货录入</string>
     <string name="purchase_nums">数量</string>
     <string name="purchase_nums_error">进货数量不能为空！</string>
     <string name="purchase_price">进价</string>
+    <string name="purchase_price_error">进价输入错误！</string>
     <string name="purchase_standard">规格</string>
     <string name="purchase_instruction">功能</string>
     <string name="purchase_success">录入成功!</string>
@@ -36,13 +38,21 @@
     <string name="sales_nums">数量</string>
     <string name="sales_nums_error">销售数量不能为空！</string>
     <string name="sales_price">售价</string>
+    <string name="sales_price_error">售价不能为空！</string>
     <string name="sales_customer">客户</string>
+    <string name="sales_customer_error">客户不能为空</string>
+    <string name="sales_customer_entry_error">客户信息录入失败！</string>
     <string name="sales_customer_tel">电话</string>
     <string name="sales_customer_phone">手机</string>
+    <string name="sales_customer_phone_error">手机号码输入有误！</string>
     <string name="sales_customer_demand">需求</string>
     <string name="sales_success">录入成功!</string>
     <string name="sales_error">录入失败!</string>
-    <string name="sales_continue">继续录入</string>
     
+    <string name="dialog_content_success">录入成功，是否继续录入？</string>
+    <string name="dialog_content_error">录入失败，是否重试？</string>
+    
+    <string name="dialog_loading_title">正在存储</string>
+    <string name="dialog_loading_content">请稍后……</string>
 
 </resources>

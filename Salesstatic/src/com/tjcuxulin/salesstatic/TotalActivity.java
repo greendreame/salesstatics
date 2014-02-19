@@ -1,7 +1,8 @@
 package com.tjcuxulin.salesstatic;
 
-import com.tjcuxulin.salesstatic.model.PurchaseList;
-import com.tjcuxulin.salesstatic.model.SalesList;
+import com.tjcuxulin.salesstatic.model.Merchandise;
+import com.tjcuxulin.salesstatic.model.Purchase;
+import com.tjcuxulin.salesstatic.model.Sales;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -25,18 +26,19 @@ public class TotalActivity extends BaseActivity {
 	}
 
 	private void loadData() {
-		Cursor cursor = db.query(true, PurchaseList.TABLENAME,
-				new String[] { PurchaseList.NAME }, null, null, null, null,
-				PurchaseList.PURCHASE_TIMESTAMP + " desc", null);
+		Cursor cursor = db.query(true, Purchase.TABLENAME,
+				new String[] { Purchase.MERCHANDISE_ID }, null, null, null,
+				null, Purchase.PURCHASE_TIMESTAMP + " desc", null);
 		if (cursor.getCount() > 0) {
 			while (cursor.moveToNext()) {
-				String nameString = cursor.getString(0);
+				long _id = cursor.getLong(0);
+				String whereClause = Purchase.MERCHANDISE_ID + " = " + _id;
 				float purchase = 0;
-				Cursor c = db.query(true, PurchaseList.TABLENAME,
-						new String[] { "total(" + PurchaseList.PURCHASE_NUMS
-								+ ")" }, PurchaseList.NAME + " = '"
-								+ nameString + "'", null, null, null, null,
-						null);
+				Cursor c = db
+						.query(true, Purchase.TABLENAME,
+								new String[] { "total("
+										+ Purchase.PURCHASE_NUMS + ")" },
+								whereClause, null, null, null, null, null);
 				if (c.getCount() > 0) {
 					c.moveToNext();
 					purchase = c.getFloat(0);
@@ -48,10 +50,9 @@ public class TotalActivity extends BaseActivity {
 				c = null;
 
 				String priceRange = null;
-				c = db.query(true, PurchaseList.TABLENAME,
-						new String[] { PurchaseList.PURCHASE_PRICE },
-						PurchaseList.NAME + " = '" + nameString + "'", null,
-						null, null, null, null);
+				c = db.query(true, Purchase.TABLENAME,
+						new String[] { Purchase.PURCHASE_PRICE }, whereClause,
+						null, null, null, null, null);
 				if (c.getCount() > 0) {
 					float min = Float.MAX_VALUE;
 					float max = Float.MIN_VALUE;
@@ -81,10 +82,10 @@ public class TotalActivity extends BaseActivity {
 				c = null;
 
 				float sales = 0;
-				c = db.query(true, SalesList.TABLENAME, new String[] { "total("
-						+ SalesList.SALES_NUMS + ")" }, PurchaseList.NAME
-						+ " = '" + nameString + "'", null, null, null, null,
-						null);
+				whereClause = Sales.MERCHANDISE_ID + " = " + _id;
+				c = db.query(true, Sales.TABLENAME, new String[] { "total("
+						+ Sales.SALES_NUMS + ")" }, whereClause, null, null,
+						null, null, null);
 				if (c.getCount() > 0) {
 					c.moveToNext();
 					sales = c.getFloat(0);
@@ -92,8 +93,15 @@ public class TotalActivity extends BaseActivity {
 				c.close();
 				c = null;
 
-				if (nameString != null && purchase != 0) {
-					addRow(nameString, purchase, priceRange, sales);
+				if (_id != -1 && purchase != 0) {
+					c = getCursorById(_id, Merchandise.TABLENAME);
+					if (c.moveToNext()) {
+						addRow(c.getString(c.getColumnIndex(Merchandise.NAME)),
+								purchase, priceRange, sales, c.getString(c
+										.getColumnIndex(Merchandise.STANDARD)),
+								c.getString(c
+										.getColumnIndex(Merchandise.INSTRUCTION)));
+					}
 				}
 
 			}
@@ -103,7 +111,7 @@ public class TotalActivity extends BaseActivity {
 	}
 
 	private void addRow(String nameString, float purchase, String priceRange,
-			float sales) {
+			float sales, String standardStr, String instructionStr) {
 		View view = LayoutInflater.from(getApplicationContext()).inflate(
 				R.layout.total_item, null);
 		TextView nameView = (TextView) view.findViewById(R.id.total_item_name);
@@ -122,10 +130,10 @@ public class TotalActivity extends BaseActivity {
 		inventoryView.setText((purchase - sales) + "");
 		TextView standardView = (TextView) view
 				.findViewById(R.id.total_item_standard);
-		standardView.setText(getStandard(nameString));
+		standardView.setText(standardStr);
 		TextView instructionView = (TextView) view
 				.findViewById(R.id.total_item_instruction);
-		instructionView.setText(getInstruction(nameString));
+		instructionView.setText(instructionStr);
 		parent.addView(view);
 	}
 }

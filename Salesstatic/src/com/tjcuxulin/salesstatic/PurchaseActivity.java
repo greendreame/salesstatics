@@ -1,7 +1,11 @@
 package com.tjcuxulin.salesstatic;
 
+import java.util.ArrayList;
+import java.util.AbstractMap.SimpleEntry;
+
 import com.tjcuxulin.salesstatic.control.MyAutoCompleteAdapter;
-import com.tjcuxulin.salesstatic.model.PurchaseList;
+import com.tjcuxulin.salesstatic.model.Merchandise;
+import com.tjcuxulin.salesstatic.model.Purchase;
 import com.tjcuxulin.salesstatic.util.SalesUtil;
 
 import android.content.ContentValues;
@@ -19,6 +23,8 @@ import android.widget.EditText;
 
 public class PurchaseActivity extends BaseActivity {
 	private MyAutoCompleteAdapter adapter;
+	private ArrayList<SimpleEntry<Integer, String>> list;
+	private long _id = -1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +32,8 @@ public class PurchaseActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_purchase);
 
+		list = new ArrayList<SimpleEntry<Integer,String>>();
+		
 		final AutoCompleteTextView nameView = (AutoCompleteTextView) findViewById(R.id.purchase_name);
 		final EditText numsView = (EditText) findViewById(R.id.purchase_nums);
 		final EditText priceView = (EditText) findViewById(R.id.purchase_price);
@@ -43,22 +51,32 @@ public class PurchaseActivity extends BaseActivity {
 					int count) {
 				// TODO Auto-generated method stub
 				String keyWord = s.toString();
-				Cursor cursor = db.query(true, PurchaseList.TABLENAME,
-						new String[] { PurchaseList.NAME }, PurchaseList.NAME
+				Cursor cursor = db.query(true, Merchandise.TABLENAME,
+						new String[] { Merchandise._ID, Merchandise.NAME }, Merchandise.NAME
 								+ " like '%" + keyWord + "%' or "
-								+ PurchaseList.NAME_FIRST_CHARS + " like '"
-								+ keyWord + "%' or " + PurchaseList.NAME_PINYIN
+								+ Merchandise.NAME_FIRST_CHARS + " like '"
+								+ keyWord + "%' or " + Merchandise.NAME_PINYIN
 								+ " like '" + keyWord + "%'", null, null,
 						null, null, null);
 
 				adapter.clear();
+				list.clear();
 				if (cursor.getCount() > 0) {
 					while (cursor.moveToNext()) {
-						adapter.add(cursor.getString(0));
+						SimpleEntry<Integer, String> entry = new SimpleEntry<Integer, String>(cursor.getInt(0), cursor.getString(1));
+						list.add(entry);
+						adapter.add(cursor.getString(1));
 					}
+				} else {
+					_id = -1;
+					numsView.setText(null);
+					priceView.setText(null);
+					priceView.setText(null);
+					standardView.setText(null);
+					instructionView.setText(null);
 				}
 				adapter.notifyDataSetChanged();
-
+				
 				cursor.close();
 				cursor = null;
 			}
@@ -81,16 +99,14 @@ public class PurchaseActivity extends BaseActivity {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				// TODO Auto-generated method stub
-				String nameString = nameView.getText().toString();
-				String standardString = getStandard(nameString);
-				if (standardString != null) {
-					standardView.setText(standardString);
+				_id = list.get(0).getKey();
+				Cursor cursor = getCursorById(_id, Merchandise.TABLENAME);
+				if (cursor.moveToNext()) {
+					standardView.setText(cursor.getString(cursor.getColumnIndex(Merchandise.STANDARD)));
+					instructionView.setText(cursor.getString(cursor.getColumnIndex(Merchandise.INSTRUCTION)));
 				}
-
-				String instructionString = getInstruction(nameString);
-				if (instructionString != null) {
-					instructionView.setText(instructionString);
-				}
+				cursor.close();
+				cursor = null;
 			}
 		});
 
@@ -99,40 +115,74 @@ public class PurchaseActivity extends BaseActivity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				String nameString = nameView.getText().toString();
-				if (isstringEmpty(nameString)) {
+				final String nameString = nameView.getText().toString();
+				if (isStringEmpty(nameString)) {
 					showToast(R.string.sales_name_error);
 					return;
 				}
 
-				String numsString = numsView.getText().toString();
-				if (isstringEmpty(numsString)) {
-					showToast(R.string.sales_name_error);
+				final String numsString = numsView.getText().toString();
+				if (isStringEmpty(numsString)) {
+					showToast(R.string.purchase_nums_error);
 					return;
 				}
 
-				String priceString = priceView.getText().toString();
-				String standardString = standardView.getText().toString();
-				String instructionString = instructionView.getText().toString();
-				ContentValues values = new ContentValues();
-				values.put(PurchaseList.NAME, nameString);
-				values.put(PurchaseList.NAME_FIRST_CHARS,
-						SalesUtil.getPinYinHeadChar(nameString));
-				values.put(PurchaseList.NAME_PINYIN,
-						SalesUtil.getPinYin(nameString));
-				values.put(PurchaseList.PURCHASE_NUMS, numsString);
-				values.put(PurchaseList.PURCHASE_PRICE, priceString);
-				values.put(PurchaseList.PURCHASE_STANDARD, standardString);
-				values.put(PurchaseList.PURCHASE_INSTRUCTION, instructionString);
-				long timestamp = System.currentTimeMillis();
-				values.put(PurchaseList.PURCHASE_TIMESTAMP, timestamp);
-				values.put(PurchaseList.PURCHASE_DATE, formatDate(timestamp));
-				if (db.insert(PurchaseList.TABLENAME, null, values) != -1) {
-					showToast(R.string.purchase_success);
-					finish();
+				final String priceString = priceView.getText().toString();
+				if (isStringEmpty(priceString)) {
+					showToast(R.string.purchase_price_error);
+					return ;
 				} else {
-					showToast(R.string.purchase_error);
+					try {
+						Float.parseFloat(priceString);
+					} catch (NumberFormatException e) {
+						// TODO Auto-generated catch block
+						showToast(R.string.purchase_price_error);
+						return ;
+					}
 				}
+				
+				final String standardString = standardView.getText().toString();
+				final String instructionString = instructionView.getText().toString();
+				progressDialog.show();
+				handler.post(new Runnable() {
+					
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						ContentValues values = new ContentValues();
+						
+						if (_id == -1) {
+							values.put(Merchandise.NAME, nameString);
+							values.put(Merchandise.NAME_FIRST_CHARS,
+									SalesUtil.getPinYinHeadChar(nameString));
+							values.put(Merchandise.NAME_PINYIN,
+									SalesUtil.getPinYin(nameString));
+							values.put(Merchandise.STANDARD, standardString);
+							values.put(Merchandise.INSTRUCTION, instructionString);
+							_id = db.insert(Merchandise.TABLENAME, null, values);
+							values.clear();
+						}
+						
+						if (_id == -1) {
+							showToast(R.string.purchase_error);
+							return ;
+						}
+						
+						values.put(Purchase.MERCHANDISE_ID, _id);
+						values.put(Purchase.PURCHASE_NUMS, numsString);
+						values.put(Purchase.PURCHASE_PRICE, priceString);
+						long timestamp = System.currentTimeMillis();
+						values.put(Purchase.PURCHASE_TIMESTAMP, timestamp);
+						values.put(Purchase.PURCHASE_DATE, formatDate(timestamp));
+						if (db.insert(Purchase.TABLENAME, null, values) != -1) {
+							progressDialog.dismiss();
+							showChooseDialog(R.string.dialog_content_success);
+						} else {
+							progressDialog.dismiss();
+							showChooseDialog(R.string.dialog_content_error);
+						}
+					}
+				});
 			}
 		});
 	}
