@@ -35,6 +35,7 @@
     <string name="total_instruction">功能</string>
     
     <string name="sales_title">销售录入</string>
+    <string name="sales_name_not_exists">品名错误，是否只录入或更新联系人信息？</string>
     <string name="sales_nums">数量</string>
     <string name="sales_nums_error">销售数量不能为空！</string>
     <string name="sales_price">售价</string>

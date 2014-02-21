@@ -6,36 +6,21 @@ import com.tjcuxulin.salesstatic.db.MySqliteOpenHelper;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
 
 public class BaseActivity extends Activity {
 	protected SQLiteDatabase db;
 	protected Toast mToast;
+	protected static final int DELAY_TIME = 500;
 	protected static final int MSG_INSERT_FINISH = 0;
-	protected ProgressDialog progressDialog;
+//	protected ProgressDialog progressDialog;
 	
-	protected static Handler handler = new Handler(){
-		public void handleMessage(android.os.Message msg) {
-			switch (msg.what) {
-			case MSG_INSERT_FINISH:
-//				BaseActivity mActivity = (BaseActivity) msg.obj;
-//				mActivity.showChooseDialog();
-				break;
-
-			default:
-				break;
-			}
-		};
-	};
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -43,9 +28,9 @@ public class BaseActivity extends Activity {
 		if (!(this instanceof MainActivity)) {
 			db = new MySqliteOpenHelper(getApplicationContext())
 					.getWritableDatabase();
-			progressDialog = new ProgressDialog(this);
-			progressDialog.setTitle(R.string.dialog_loading_title);
-			progressDialog.setMessage(getString(R.string.dialog_loading_content));
+//			progressDialog = new ProgressDialog(this);
+//			progressDialog.setTitle(R.string.dialog_loading_title);
+//			progressDialog.setMessage(getString(R.string.dialog_loading_content));
 		}
 	}
 
