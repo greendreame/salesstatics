@@ -1,8 +1,7 @@
 package com.tjcuxulin.salesstatic;
 
-import java.text.DateFormat;
-
 import com.tjcuxulin.salesstatic.db.MySqliteOpenHelper;
+import com.tjcuxulin.salesstatic.util.SalesUtil;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -55,6 +54,7 @@ public class BaseActivity extends Activity {
 		super.onDestroy();
 		if (db != null) {
 			db.close();
+			db = null;
 		}
 	}
 
@@ -70,9 +70,8 @@ public class BaseActivity extends Activity {
 		return TextUtils.isEmpty(str);
 	}
 
-	public String formatDate(long time) {
-		DateFormat formatter = DateFormat.getDateInstance();
-		return formatter.format(time);
+	public String formatDate(long timeStamp) {
+		return SalesUtil.getDateFormatString("yyyy-MM-dd", timeStamp);
 	}
 
 	public Cursor getCursorById(long id, String table) {

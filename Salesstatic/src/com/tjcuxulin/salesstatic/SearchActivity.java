@@ -169,9 +169,11 @@ public class SearchActivity extends BaseActivity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				if (merchandiseId != -1) {
+					
 				}
 				
 				if (customerId != -1) {
+					
 				}
 			}
 		});
@@ -180,7 +182,7 @@ public class SearchActivity extends BaseActivity {
 	}
 	
 	private void addRow(String merchandiseString, String customerString,
-			float sales, String timeStr) {
+			float salesNums, String timeStr) {
 		View view = LayoutInflater.from(getApplicationContext()).inflate(
 				R.layout.search_item, null);
 		TextView merchandiseView = (TextView) view.findViewById(R.id.search_item_merchandise_name);
@@ -190,7 +192,7 @@ public class SearchActivity extends BaseActivity {
 		customerView.setText(customerString);
 		TextView salesView = (TextView) view
 				.findViewById(R.id.search_item_sales_nums);
-		salesView.setText(sales + "");
+		salesView.setText(salesNums + "");
 		TextView timeView = (TextView) view
 				.findViewById(R.id.search_item_sales_time);
 		timeView.setText(timeStr);
