@@ -15,7 +15,7 @@ public class MainActivity extends BaseActivity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		Button total = (Button) findViewById(R.id.main_total);
-		Button error = (Button) findViewById(R.id.main_error_entry);
+		Button error = (Button) findViewById(R.id.main_entry);
 		Button purchase = (Button) findViewById(R.id.main_purchase);
 		Button sales = (Button) findViewById(R.id.main_sales);
 		Button search = (Button) findViewById(R.id.main_search);
@@ -44,8 +44,8 @@ public class MainActivity extends BaseActivity implements OnClickListener {
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		switch (v.getId()) {
-		case R.id.main_error_entry:
-			
+		case R.id.main_entry:
+			startActivity(new Intent(getApplicationContext(), EntryActivity.class));
 			break;
 		case R.id.main_purchase:
 			startActivity(new Intent(getApplicationContext(), PurchaseActivity.class));
@@ -54,7 +54,7 @@ public class MainActivity extends BaseActivity implements OnClickListener {
 			startActivity(new Intent(getApplicationContext(), SalesActivity.class));
 			break;
 		case R.id.main_search:
-
+			startActivity(new Intent(getApplicationContext(), SearchActivity.class));
 			break;
 		case R.id.main_total:
 			startActivity(new Intent(getApplicationContext(), TotalActivity.class));

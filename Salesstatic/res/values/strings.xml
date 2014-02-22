@@ -8,8 +8,8 @@
     <string name="main_total">信息概览</string>
     <string name="main_purchase">进货录入</string>
     <string name="main_sales">销售录入</string>
-    <string name="main_error_entry">录入列表</string>
-    <string name="main_search">信息检索</string>
+    <string name="main_entry">录入列表</string>
+    <string name="main_search">销售查询</string>
     
     <string name="sales_name">品名</string>
     <string name="sales_name_error">请输入正确品名!</string>
@@ -55,5 +55,13 @@
     
     <string name="dialog_loading_title">正在存储</string>
     <string name="dialog_loading_content">请稍后……</string>
+    
+    <string name="search_merchandise">品&#160;&#160;&#160;&#160;名</string>
+    <string name="search_customer">客&#160;&#160;&#160;&#160;户</string>
+    <string name="search_ok">搜索</string>
+    <string name="search_starttime">起始时间</string>
+    <string name="search_endtime">终止时间</string>
+    
+    <string name="time">时间</string>
 
 </resources>

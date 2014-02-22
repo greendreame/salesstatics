@@ -16,6 +16,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -25,6 +26,7 @@ import android.widget.EditText;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class SalesActivity extends BaseActivity {
+	private final String TAG = "SalesActivity";
 	private long merchandiseId = -1;
 	private long customerId = -1;
 
@@ -192,13 +194,15 @@ public class SalesActivity extends BaseActivity {
 				if (!isStringEmpty(phoneNumString)) {
 					boolean flag = false;
 					try {
-						Integer.parseInt(phoneNumString);
+						Long.parseLong(phoneNumString);
 						if (phoneNumString.length() != 11) {
 							flag = true;
+							Log.d(TAG, "phoneNumString.length() != 11");
 						}
 					} catch (NumberFormatException e) {
 						// TODO Auto-generated catch block
 						flag = true;
+						Log.d(TAG, "NumberFormatException");
 					}
 
 					if (flag) {

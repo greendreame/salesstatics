@@ -39,10 +39,10 @@
         android:layout_marginTop="10dp" />
     
     <Button
-        android:id="@+id/main_error_entry"
+        android:id="@+id/main_entry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/main_error_entry"
+        android:text="@string/main_entry"
         android:layout_marginTop="10dp" />
 
 </LinearLayout>

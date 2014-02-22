@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:fillViewport="true" >
 
     <HorizontalScrollView
         android:layout_width="wrap_content"
@@ -18,34 +19,55 @@
                 android:layout_marginTop="20dp"
                 android:orientation="horizontal" >
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="5dp"
-                    android:text="@string/sales_customer"
-                    android:textSize="16sp" />
-
                 <AutoCompleteTextView
                     android:id="@+id/search_customer"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
+                    android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
-                    android:text="@string/sales_name"
+                    android:hint="@string/search_customer"
                     android:textSize="16sp" />
 
                 <AutoCompleteTextView
                     android:id="@+id/search_merchandise"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:hint="@string/search_merchandise"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/search_starttime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:hint="@string/search_starttime"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/search_endtime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:hint="@string/search_endtime"
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/search_ok"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:text="@string/search_ok"
+                    android:textSize="16sp" >
+                </Button>
             </LinearLayout>
 
             <TableLayout
+                android:id="@+id/search_parent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" >
 
@@ -53,7 +75,45 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" >
 
-                    <TextView />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:text="@string/sales_name"
+                        android:textSize="23sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:text="@string/sales_customer"
+                        android:textSize="23sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:text="@string/sales_nums"
+                        android:textSize="23sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:text="@string/time"
+                        android:textSize="23sp" />
                 </TableRow>
             </TableLayout>
         </LinearLayout>

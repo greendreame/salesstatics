@@ -11,6 +11,8 @@ import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -18,7 +20,20 @@ public class BaseActivity extends Activity {
 	protected SQLiteDatabase db;
 	protected Toast mToast;
 	protected static final int DELAY_TIME = 500;
-	protected static final int MSG_INSERT_FINISH = 0;
+	protected static final int MSG_FINISH = 0;
+	protected static Handler handler = new Handler(){
+		public void handleMessage(android.os.Message msg) {
+			switch (msg.what) {
+			case MSG_FINISH:
+				BaseActivity baseActivity = (BaseActivity) msg.obj;
+				baseActivity.finish();
+				break;
+
+			default:
+				break;
+			}
+		};
+	};
 //	protected ProgressDialog progressDialog;
 	
 	@Override
@@ -93,7 +108,10 @@ public class BaseActivity extends Activity {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				// TODO Auto-generated method stub
-				finish();
+				Message msg = new Message();
+				msg.what = MSG_FINISH;
+				msg.obj = BaseActivity.this;
+				handler.sendMessageDelayed(msg, DELAY_TIME);
 			}
 		});
 		builder.create().show();
