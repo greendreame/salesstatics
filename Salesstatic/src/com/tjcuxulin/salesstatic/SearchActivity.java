@@ -6,6 +6,7 @@ import java.util.AbstractMap.SimpleEntry;
 import com.tjcuxulin.salesstatic.control.MyAutoCompleteAdapter;
 import com.tjcuxulin.salesstatic.model.Customer;
 import com.tjcuxulin.salesstatic.model.Merchandise;
+import com.tjcuxulin.salesstatic.model.Sales;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -25,10 +26,12 @@ import android.widget.AdapterView.OnItemClickListener;
 public class SearchActivity extends BaseActivity {
 	private long merchandiseId = -1;
 	private long customerId = -1;
-	private String startTimeStr;
-	private String endTimeStr;
+	// private String startTimeStr;
+	// private String endTimeStr;
 	private TableLayout parent;
-	
+	private final int MAXLOAD = 300;
+	private int page = 0;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -36,9 +39,9 @@ public class SearchActivity extends BaseActivity {
 		setContentView(R.layout.activity_search);
 		init();
 	}
-	
+
 	private void init() {
-		parent = (TableLayout) findViewById(R.id.total_parent);
+		parent = (TableLayout) findViewById(R.id.search_parent);
 		final ArrayList<SimpleEntry<Integer, String>> merchandiselist = new ArrayList<SimpleEntry<Integer, String>>();
 		final ArrayList<SimpleEntry<Integer, String>> customerslist = new ArrayList<SimpleEntry<Integer, String>>();
 		final MyAutoCompleteAdapter customerAdapter = new MyAutoCompleteAdapter(
@@ -47,9 +50,9 @@ public class SearchActivity extends BaseActivity {
 				getApplicationContext(), R.layout.autocomplete_items);
 		AutoCompleteTextView merchandiseView = (AutoCompleteTextView) findViewById(R.id.search_merchandise);
 		AutoCompleteTextView customerView = (AutoCompleteTextView) findViewById(R.id.search_customer);
-		EditText startTimeView = (EditText) findViewById(R.id.search_starttime);
-		EditText endTimeView = (EditText) findViewById(R.id.search_endtime);
-		
+		final EditText startTimeView = (EditText) findViewById(R.id.search_starttime);
+		final EditText endTimeView = (EditText) findViewById(R.id.search_endtime);
+
 		customerView.setAdapter(customerAdapter);
 		customerView.addTextChangedListener(new TextWatcher() {
 
@@ -161,31 +164,80 @@ public class SearchActivity extends BaseActivity {
 				merchandiseId = merchandiselist.get(0).getKey();
 			}
 		});
-		
+
 		Button ok = (Button) findViewById(R.id.search_ok);
 		ok.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				String whereClause = "";
 				if (merchandiseId != -1) {
-					
+					whereClause += Sales.MERCHANDISE_ID + " = " + merchandiseId;
+				}
+
+				if (customerId != -1) {
+					if (merchandiseId != -1) {
+						whereClause += " and ";
+					}
+
+					whereClause += Sales.CUSTOMER_ID + " = " + customerId;
+				}
+
+				String startTimeStr = startTimeView.getText().toString();
+				String endTimeStr = endTimeView.getText().toString();
+				if (!isStringEmpty(startTimeStr)) {
+					if (!whereClause.equals("")) {
+						whereClause += " and ";
+					}
+
+					whereClause += Sales.DATE + " >= '" + startTimeStr + "'";
+				}
+
+				if (!isStringEmpty(endTimeStr)) {
+					if (!whereClause.equals("")) {
+						whereClause += " and ";
+					}
+
+					whereClause += Sales.DATE + " <= '" + endTimeStr + "'";
 				}
 				
-				if (customerId != -1) {
-					
+				if (whereClause.equals("")) {
+					whereClause = null;
 				}
+
+				Cursor cursor = db.query(true, Sales.TABLENAME, null,
+						whereClause, null, null, null, null, page * MAXLOAD
+								+ ", " + MAXLOAD);
+				while (cursor.moveToNext()) {
+					addRow(getColumnString(Merchandise.NAME, cursor
+							.getLong(cursor
+									.getColumnIndex(Sales.MERCHANDISE_ID)),
+							Merchandise.TABLENAME),
+							getColumnString(
+									Customer.NAME,
+									cursor.getLong(cursor
+											.getColumnIndex(Sales.CUSTOMER_ID)),
+									Customer.TABLENAME), cursor.getFloat(cursor
+									.getColumnIndex(Sales.SALES_NUMS)),
+							cursor.getFloat(cursor
+									.getColumnIndex(Sales.SELLING_PRICE)),
+							cursor.getString(cursor.getColumnIndex(Sales.DATE)));
+				}
+
+				cursor.close();
+				cursor = null;
 			}
 		});
-		
-		
+
 	}
-	
+
 	private void addRow(String merchandiseString, String customerString,
-			float salesNums, String timeStr) {
+			float salesNums, float price, String timeStr) {
 		View view = LayoutInflater.from(getApplicationContext()).inflate(
 				R.layout.search_item, null);
-		TextView merchandiseView = (TextView) view.findViewById(R.id.search_item_merchandise_name);
+		TextView merchandiseView = (TextView) view
+				.findViewById(R.id.search_item_merchandise_name);
 		merchandiseView.setText(merchandiseString);
 		TextView customerView = (TextView) view
 				.findViewById(R.id.search_item_customer_name);
@@ -193,6 +245,9 @@ public class SearchActivity extends BaseActivity {
 		TextView salesView = (TextView) view
 				.findViewById(R.id.search_item_sales_nums);
 		salesView.setText(salesNums + "");
+		TextView priceView = (TextView) view
+				.findViewById(R.id.search_item_sales_price);
+		priceView.setText(price + "");
 		TextView timeView = (TextView) view
 				.findViewById(R.id.search_item_sales_time);
 		timeView.setText(timeStr);

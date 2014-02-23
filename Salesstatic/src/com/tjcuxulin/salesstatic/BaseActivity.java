@@ -88,7 +88,7 @@ public class BaseActivity extends Activity {
 		if (db != null && !TextUtils.isEmpty(columnName) && _id != -1) {
 			Cursor cursor = db.query(true, table, new String[] { columnName },
 					"_id = " + _id, null, null, null, null, null);
-			if (cursor.getCount() > 0) {
+			if (cursor.moveToNext() && cursor.getCount() > 0) {
 				result = cursor.getString(0);
 			}
 			cursor.close();

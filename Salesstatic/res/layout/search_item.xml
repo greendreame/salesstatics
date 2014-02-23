@@ -12,6 +12,7 @@
         android:layout_marginTop="5dp"
         android:gravity="center"
         android:text="@string/sales_name"
+        android:textColor="#000"
         android:textSize="23sp" />
 
     <TextView
@@ -23,6 +24,7 @@
         android:layout_marginTop="5dp"
         android:gravity="center"
         android:text="@string/sales_customer"
+        android:textColor="#000"
         android:textSize="23sp" />
 
     <TextView
@@ -34,6 +36,19 @@
         android:layout_marginTop="5dp"
         android:gravity="center"
         android:text="@string/sales_nums"
+        android:textColor="#000"
+        android:textSize="23sp" />
+
+    <TextView
+        android:id="@+id/search_item_sales_price"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:text="@string/sales_price"
+        android:textColor="#000"
         android:textSize="23sp" />
 
     <TextView
@@ -45,6 +60,7 @@
         android:layout_marginTop="5dp"
         android:gravity="center"
         android:text="@string/time"
+        android:textColor="#000"
         android:textSize="23sp" />
 
 </TableRow>
