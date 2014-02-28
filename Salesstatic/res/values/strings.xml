@@ -8,7 +8,7 @@
     <string name="main_total">信息概览</string>
     <string name="main_purchase">进货录入</string>
     <string name="main_sales">销售录入</string>
-    <string name="main_entry">录入列表</string>
+    <string name="main_entry">录入查询</string>
     <string name="main_search">销售查询</string>
     
     <string name="sales_name">品名</string>

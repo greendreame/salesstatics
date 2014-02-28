@@ -29,8 +29,8 @@ public class SearchActivity extends BaseActivity {
 	// private String startTimeStr;
 	// private String endTimeStr;
 	private TableLayout parent;
-	private final int MAXLOAD = 300;
-	private int page = 0;
+//	private final int MAXLOAD = 1000;
+//	private int page = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -206,9 +206,9 @@ public class SearchActivity extends BaseActivity {
 					whereClause = null;
 				}
 
+//				String limit = page * MAXLOAD + ", " + MAXLOAD;
 				Cursor cursor = db.query(true, Sales.TABLENAME, null,
-						whereClause, null, null, null, null, page * MAXLOAD
-								+ ", " + MAXLOAD);
+						whereClause, null, null, null, null, null);
 				while (cursor.moveToNext()) {
 					addRow(getColumnString(Merchandise.NAME, cursor
 							.getLong(cursor
