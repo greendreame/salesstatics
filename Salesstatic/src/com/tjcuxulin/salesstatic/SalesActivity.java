@@ -8,10 +8,9 @@ import com.tjcuxulin.salesstatic.model.Customer;
 import com.tjcuxulin.salesstatic.model.Merchandise;
 import com.tjcuxulin.salesstatic.model.Sales;
 import com.tjcuxulin.salesstatic.util.SalesUtil;
+import com.tjcuxulin.salesstatic.db.MySqliteOpenHelper;
 
-import android.app.AlertDialog;
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
@@ -61,8 +60,16 @@ public class SalesActivity extends BaseActivity {
 					int count) {
 				// TODO Auto-generated method stub
 				String keyWord = s.toString();
+				
+				if (customerId != -1) {
+					customerId = -1;
+					telView.setText(null);
+					phoneView.setText(null);
+					demandView.setText(null);
+				}
+				
 				Cursor cursor = db.query(true, Customer.TABLENAME,
-						new String[] { Customer._ID, Customer.NAME },
+						new String[] { MySqliteOpenHelper._ID, Customer.NAME },
 						Customer.NAME + " like '%" + keyWord + "%' or "
 								+ Customer.NAME_FIRST_CHARS + " like '"
 								+ keyWord + "%' or " + Customer.NAME_PINYIN
@@ -78,12 +85,8 @@ public class SalesActivity extends BaseActivity {
 						customerslist.add(entry);
 						customerAdapter.add(cursor.getString(1));
 					}
-				} else {
-					customerId = -1;
-					telView.setText(null);
-					phoneView.setText(null);
-					demandView.setText(null);
 				}
+
 				customerAdapter.notifyDataSetChanged();
 
 				cursor.close();
@@ -130,8 +133,13 @@ public class SalesActivity extends BaseActivity {
 					int count) {
 				// TODO Auto-generated method stub
 				String keyWord = s.toString();
+				
+				if (merchandiseId != -1) {
+					merchandiseId = -1;
+				}
+				
 				Cursor cursor = db.query(true, Merchandise.TABLENAME,
-						new String[] { Merchandise._ID, Merchandise.NAME },
+						new String[] { MySqliteOpenHelper._ID, Merchandise.NAME },
 						Merchandise.NAME + " like '%" + keyWord + "%' or "
 								+ Merchandise.NAME_FIRST_CHARS + " like '"
 								+ keyWord + "%' or " + Merchandise.NAME_PINYIN
@@ -147,9 +155,8 @@ public class SalesActivity extends BaseActivity {
 						merchandiselist.add(entry);
 						nameAdapter.add(cursor.getString(1));
 					}
-				} else {
-					merchandiseId = -1;
 				}
+				
 				nameAdapter.notifyDataSetChanged();
 
 				cursor.close();
@@ -220,38 +227,45 @@ public class SalesActivity extends BaseActivity {
 				values.put(Customer.CELLPHONE, phoneNumString);
 				values.put(Customer.TELEPHONE, telView.getText().toString());
 				values.put(Customer.DEMAND, demandView.getText().toString());
-
-				if (merchandiseId == -1) {
-//					progressDialog.dismiss();
-					AlertDialog.Builder builder = new AlertDialog.Builder(
-							SalesActivity.this);
-					builder.setMessage(R.string.sales_name_not_exists);
-					builder.setPositiveButton(R.string.ok,
-							new DialogInterface.OnClickListener() {
-
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									// TODO Auto-generated method stub
-									if (customerId == -1) {
-										customerId = db.insert(
-												Customer.TABLENAME, null,
-												values);
-									} else {
-										db.update(
-												Customer.TABLENAME,
-												values,
-												Customer._ID + "=" + customerId,
-												null);
-									}
-
-									showToast(R.string.sales_success);
-								}
-							});
-					builder.setNegativeButton(R.string.cancel, null);
-					builder.create().show();
+				
+				if (customerId == -1) {
+					values.put(MySqliteOpenHelper._ID, customerStr.hashCode());
+					customerId = db.insert(
+							Customer.TABLENAME, null,
+							values);
+				} else {
+					customerId = db.update(
+							Customer.TABLENAME,
+							values,
+							MySqliteOpenHelper._ID + "=" + customerId,
+							null);
+				}
+				
+				if (customerId == -1) {
+					showToast(R.string.sales_customer_entry_error);
 					return;
 				}
+				values.clear();
+
+//				if (merchandiseId == -1) {
+////					progressDialog.dismiss();
+//					AlertDialog.Builder builder = new AlertDialog.Builder(
+//							SalesActivity.this);
+//					builder.setMessage(R.string.sales_name_not_exists);
+//					builder.setPositiveButton(R.string.ok,
+//							new DialogInterface.OnClickListener() {
+//
+//								@Override
+//								public void onClick(DialogInterface dialog,
+//										int which) {
+//									// TODO Auto-generated method stub
+//									showToast(R.string.sales_success);
+//								}
+//							});
+//					builder.setNegativeButton(R.string.cancel, null);
+//					builder.create().show();
+//					return;
+//				}
 
 				String numsString = numsView.getText().toString();
 				if (isStringEmpty(numsString)) {
@@ -271,13 +285,6 @@ public class SalesActivity extends BaseActivity {
 						showToast(R.string.purchase_price_error);
 						return;
 					}
-				}
-
-				values.clear();
-
-				if (customerId == -1) {
-					showToast(R.string.sales_customer_entry_error);
-					return;
 				}
 
 				values.put(Sales.CUSTOMER_ID, customerId);

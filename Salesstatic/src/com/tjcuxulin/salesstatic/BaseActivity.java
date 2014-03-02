@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 public class BaseActivity extends Activity {
 	protected SQLiteDatabase db;
+	protected boolean isVisiable = false;
 	protected Toast mToast;
 	protected static final int DELAY_TIME = 500;
 	protected static final int MSG_FINISH = 0;
@@ -39,13 +40,14 @@ public class BaseActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		if (!(this instanceof MainActivity)) {
+		isVisiable = SalesUtil.isFileExists("jxc");
+//		if (!(this instanceof MainActivity)) {
 			db = new MySqliteOpenHelper(getApplicationContext())
 					.getWritableDatabase();
 //			progressDialog = new ProgressDialog(this);
 //			progressDialog.setTitle(R.string.dialog_loading_title);
 //			progressDialog.setMessage(getString(R.string.dialog_loading_content));
-		}
+//		}
 	}
 
 	@Override

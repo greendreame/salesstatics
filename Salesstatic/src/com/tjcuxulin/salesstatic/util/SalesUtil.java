@@ -1,9 +1,15 @@
 package com.tjcuxulin.salesstatic.util;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import android.graphics.Paint;
+import android.os.Environment;
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
@@ -88,4 +94,62 @@ public class SalesUtil {
 		SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.US);
 		return format.format(new Date(timeStamp));
 	}
+
+	public static boolean isFileExists(String fileName) {
+		File file = new File(Environment.getExternalStorageDirectory(),
+				fileName);
+		if (file.exists()) {
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean saveStringToFile(String pathString, String fileName,
+			String string, boolean append) {
+		File path = new File(pathString);
+		if (!path.exists()) {
+			path.mkdirs();
+		}
+
+		File file = new File(pathString, fileName);
+
+		try {
+			if (append == false && file.exists()) {
+				file.delete();
+				file.createNewFile();
+			}
+
+			OutputStreamWriter writer = new OutputStreamWriter(
+					new FileOutputStream(file, append), "utf-8");
+			writer.write(string);
+			writer.flush();
+			writer.close();
+			return true;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
+	public static boolean saveStringToFile(String fileName, String string,
+			boolean append) {
+		return saveStringToFile(Environment.getExternalStorageDirectory()
+				.getAbsolutePath(), fileName, string, append);
+	}
+	
+	public static String getDataFileAblutePath(String fileName) {
+		return Environment.getExternalStorageDirectory()
+				.getAbsolutePath() + File.separator + fileName;
+	}
+	
+	public static int GetPixelByText(float textSize, String text) {  
+        Paint mTextPaint = new Paint();  
+        mTextPaint.setTextSize(textSize);
+        mTextPaint.setFakeBoldText(true);
+        mTextPaint.setAntiAlias(true);
+  
+        return (int) (mTextPaint.measureText(text) + textSize);  
+    }
 }

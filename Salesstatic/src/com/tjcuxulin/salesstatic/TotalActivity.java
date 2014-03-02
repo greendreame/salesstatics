@@ -22,6 +22,35 @@ public class TotalActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_total);
 		parent = (TableLayout) findViewById(R.id.total_parent);
+
+		TextView totalPurchseView = (TextView) findViewById(R.id.total_purchase_total);
+		TextView totalSalesView = (TextView) findViewById(R.id.total_sales_total);
+		Cursor cursor = db.query(true, Purchase.TABLENAME,
+				new String[] { "sum(" + Purchase.PURCHASE_PRICE + "*"
+						+ Purchase.PURCHASE_NUMS + ")" }, null, null, null,
+				null, null, null);
+		if (cursor.moveToNext()) {
+			totalPurchseView.setText(getString(R.string.total_purchase_total,
+					cursor.getFloat(0)));
+		}
+		cursor.close();
+		cursor = null;
+
+		cursor = db.query(true, Sales.TABLENAME, new String[] { "sum("
+				+ Sales.SALES_NUMS + "*" + Sales.SELLING_PRICE + ")" }, null,
+				null, null, null, null, null);
+		if (cursor.moveToNext()) {
+			totalSalesView.setText(getString(R.string.total_sales_total,
+					cursor.getFloat(0)));
+		}
+		cursor.close();
+		cursor = null;
+
+		if (isVisiable == false) {
+			totalPurchseView.setVisibility(View.GONE);
+			totalSalesView.setVisibility(View.GONE);
+		}
+
 		loadData();
 	}
 
@@ -97,7 +126,10 @@ public class TotalActivity extends BaseActivity {
 					c = getCursorById(_id, Merchandise.TABLENAME);
 					if (c.moveToNext()) {
 						addRow(c.getString(c.getColumnIndex(Merchandise.NAME)),
-								purchase, priceRange, sales, c.getString(c
+								purchase,
+								priceRange,
+								sales,
+								c.getString(c
 										.getColumnIndex(Merchandise.STANDARD)),
 								c.getString(c
 										.getColumnIndex(Merchandise.INSTRUCTION)));
@@ -108,6 +140,11 @@ public class TotalActivity extends BaseActivity {
 		}
 		cursor.close();
 		cursor = null;
+
+		if (isVisiable == false) {
+			TextView priceView = (TextView) findViewById(R.id.total_price);
+			priceView.setVisibility(View.GONE);
+		}
 	}
 
 	private void addRow(String nameString, float purchase, String priceRange,
@@ -122,6 +159,9 @@ public class TotalActivity extends BaseActivity {
 		TextView priceView = (TextView) view
 				.findViewById(R.id.total_item_price);
 		priceView.setText(priceRange);
+		if (isVisiable == false) {
+			priceView.setVisibility(View.GONE);
+		}
 		TextView salesView = (TextView) view
 				.findViewById(R.id.total_item_sales);
 		salesView.setText(sales + "");

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.AbstractMap.SimpleEntry;
 
 import com.tjcuxulin.salesstatic.control.MyAutoCompleteAdapter;
+import com.tjcuxulin.salesstatic.db.MySqliteOpenHelper;
 import com.tjcuxulin.salesstatic.model.Merchandise;
 import com.tjcuxulin.salesstatic.model.Purchase;
 import com.tjcuxulin.salesstatic.util.SalesUtil;
@@ -37,6 +38,7 @@ public class PurchaseActivity extends BaseActivity {
 		final AutoCompleteTextView nameView = (AutoCompleteTextView) findViewById(R.id.purchase_name);
 		final EditText numsView = (EditText) findViewById(R.id.purchase_nums);
 		final EditText priceView = (EditText) findViewById(R.id.purchase_price);
+		final EditText sellpriceView = (EditText) findViewById(R.id.purchase_sell_price);
 		final EditText standardView = (EditText) findViewById(R.id.purchase_standard);
 		final EditText instructionView = (EditText) findViewById(R.id.purchase_instruction);
 		Button ok = (Button) findViewById(R.id.purchase_ok);
@@ -51,8 +53,18 @@ public class PurchaseActivity extends BaseActivity {
 					int count) {
 				// TODO Auto-generated method stub
 				String keyWord = s.toString();
+				
+				if (_id != -1) {
+					_id = -1;
+					numsView.setText(null);
+					priceView.setText(null);
+					priceView.setText(null);
+					standardView.setText(null);
+					instructionView.setText(null);
+				}
+				
 				Cursor cursor = db.query(true, Merchandise.TABLENAME,
-						new String[] { Merchandise._ID, Merchandise.NAME },
+						new String[] { MySqliteOpenHelper._ID, Merchandise.NAME },
 						Merchandise.NAME + " like '%" + keyWord + "%' or "
 								+ Merchandise.NAME_FIRST_CHARS + " like '"
 								+ keyWord + "%' or " + Merchandise.NAME_PINYIN
@@ -68,14 +80,8 @@ public class PurchaseActivity extends BaseActivity {
 						list.add(entry);
 						adapter.add(cursor.getString(1));
 					}
-				} else {
-					_id = -1;
-					numsView.setText(null);
-					priceView.setText(null);
-					priceView.setText(null);
-					standardView.setText(null);
-					instructionView.setText(null);
 				}
+				
 				adapter.notifyDataSetChanged();
 
 				cursor.close();
@@ -143,6 +149,20 @@ public class PurchaseActivity extends BaseActivity {
 						return;
 					}
 				}
+				
+				String sellpriceString = sellpriceView.getText().toString();
+				if (isStringEmpty(sellpriceString)) {
+					showToast(R.string.purchase_price_error);
+					return;
+				} else {
+					try {
+						Float.parseFloat(sellpriceString);
+					} catch (NumberFormatException e) {
+						// TODO Auto-generated catch block
+						showToast(R.string.purchase_sell_price_error);
+						return;
+					}
+				}
 
 				String standardString = standardView.getText().toString();
 				String instructionString = instructionView.getText()
@@ -156,10 +176,12 @@ public class PurchaseActivity extends BaseActivity {
 						SalesUtil.getPinYin(nameString));
 				values.put(Merchandise.STANDARD, standardString);
 				values.put(Merchandise.INSTRUCTION, instructionString);
+				values.put(Merchandise.SELL_PRICE, sellpriceString);
 				if (_id == -1) {
+					values.put(MySqliteOpenHelper._ID, nameString.hashCode());
 					_id = db.insert(Merchandise.TABLENAME, null, values);
 				} else {
-					db.update(Merchandise.TABLENAME, values, Merchandise._ID
+					db.update(Merchandise.TABLENAME, values, MySqliteOpenHelper._ID
 							+ "=" + _id, null);
 				}
 

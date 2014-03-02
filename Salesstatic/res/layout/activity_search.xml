@@ -22,7 +22,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
+                android:completionThreshold="1"
                 android:hint="@string/search_customer"
+                android:textColor="#000"
                 android:textSize="16sp" />
 
             <AutoCompleteTextView
@@ -31,7 +33,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
+                android:completionThreshold="1"
                 android:hint="@string/search_merchandise"
+                android:textColor="#000"
                 android:textSize="16sp" />
 
             <EditText
@@ -106,6 +110,7 @@
                     android:textSize="23sp" />
 
                 <TextView
+                    android:id="@+id/search_price"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
